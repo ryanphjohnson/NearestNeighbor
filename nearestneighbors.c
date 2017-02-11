@@ -52,7 +52,7 @@ int main () {
 	train (myData, true);
 	train (testData, false);
 	
-	printf ("predicting...\n");
+	printf ("Predicting...\n");
 
 	for (i=0; i<numCPU; i++) {
 		input.unknownData = &(testData [numCPU / DATA_SET_SIZE * i]);
