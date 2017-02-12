@@ -11,6 +11,7 @@
 typedef struct {
 	int x;
 	int y;
+	int z;
 	int label;
 } datum;
 
@@ -77,14 +78,16 @@ void train (datum set[], bool setLabel) {
 		for (i=0; i<DATA_SET_SIZE; i++) {
 			set[i].x = rand() % 1000; // TEMP
 			set[i].y = rand() % 1000; // TEMP
-			set[i].label = set[i].x + set[i].y < 1000 ? 0 : 1; // TEMP
-//			printf ("(%i, %i)\n", set[i].x, set[i].y);
+			set[i].z = rand() % 1000; // TEMP
+			set[i].label = set[i].x + set[i].y + set[i].z < 1500 ? 0 : 1; // TEMP
+//			printf ("(%i, %i, %i)\n", set[i].x, set[i].y, set[i].z);
 		}
 	} else {
 		for (i=0; i<DATA_SET_SIZE; i++) {
 			set[i].x = rand() % 1000; // TEMP
 			set[i].y = rand() % 1000; // TEMP
-//			printf ("(%i, %i)\n", set[i].x, set[i].y);
+			set[i].z = rand() % 1000; // TEMP
+//			printf ("(%i, %i, %i)\n", set[i].x, set[i].y, set[i].z);
 		}
 	}
 }
@@ -104,9 +107,9 @@ void* predict (void* args) {
 }
 
 void closest (datum* unknown, datum set [DATA_SET_SIZE]) {
-	int unknownArray [2] = {unknown->x, unknown->y}; // TEMP
-	int setArray [2] = {set[0].x, set[0].y}; // TEMP
-	int len = 2; // TEMP
+	int unknownArray [3] = {unknown->x, unknown->y, unknown->z}; // TEMP
+	int setArray [3] = {set[0].x, set[0].y, set[0].z}; // TEMP
+	int len = 3; // TEMP
 	double bestDist = CalculateDistance (unknownArray, setArray, len);
 	int bestIndex = 0;
 	int i;
@@ -114,13 +117,9 @@ void closest (datum* unknown, datum set [DATA_SET_SIZE]) {
 	for (i=0; i<DATA_SET_SIZE; i++) {
 		setArray [0] = set[i].x; // TEMP
 	       	setArray [1] = set[i].y; // TEMP
+		setArray [2] = set[i].z; // TEMP
 		double dist = CalculateDistance (unknownArray, setArray, len);
 //		printf ("dist=%f best=%f\n", dist, bestDist);
-
-		// TEMP
-		if (unknown->x == set[i].x && unknown->y == set[i].y) {
-			printf ("Funny business at %i! Real vals: (%i, %i) and (%i,%i)\n", i, unknown->x, unknown->y, set[i].x, set[i].y);
-		}
 
 		if (dist < bestDist) {
 			bestDist = dist;
@@ -129,7 +128,7 @@ void closest (datum* unknown, datum set [DATA_SET_SIZE]) {
 	}
 
 	unknown->label = set [bestIndex].label;
-	printf ("Distance from (%i, %i) to (%i, %i) is %f, making it a %i\n", unknown->x, unknown->y, set [bestIndex].x, set [bestIndex].y, bestDist, unknown->label);
+	printf ("Distance from (%i, %i, %i){%i} to (%i, %i, %i){%i} is %f, making it a %i\n", unknown->x, unknown->y, unknown->z, unknown->x + unknown->y + unknown->z, set [bestIndex].x, set [bestIndex].y, set [bestIndex].z, set [bestIndex].x + set [bestIndex].y + set [bestIndex].z, bestDist, unknown->label);
 }
 
 double CalculateDistance (int p1[], int p2[], int len) {
